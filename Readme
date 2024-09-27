@@ -1,0 +1,120 @@
+Technologies used : Java SpringBoot and MySQL
+
+The main entities used here 
+
+1. Cart
+2.CartItem
+3.Coupon
+
+Each entity contains corresponding  fields :
+
+1. cart 
+>List of items added.
+>total amount of items.
+>discounted total amount.
+
+2.CartItem
+>productId of product;
+>Quantity of each product;
+>product price;
+> discountedPrice;
+
+3.Coupon
+> product_id;
+> type;
+> details;
+>repetitionLimit;
+> buyProducts;
+>getProducts;
+
+Here I am using Sprind data JPA which contains the JPA Repository that helps to use CRUD methods.
+
+The Service class that contains business logic:
+1. creation of coupon
+2.getallcoupons
+3.findbycouponId
+4.update coupon details such as product details,type,repetition limit
+5.The  logic for fetching and applying applicable coupons for a cart
+6.logic for applying a specific coupon
+7.Based on the  applyCartWiseCoupon,Product-wise Coupon,BxGy Coupon we have methods for implementing them:
+  
+Cart wise :
+when
+totalCartAmount = discountThreshold
+ discount =totalCartAmount * discountPercentage / 100
+we return the
+totalCartAmount-discount
+
+when
+totalCartAmount > discountThreshold
+Apply discount when total is greater than threshold
+discount = totalCartAmount * discountPercentage / 100;
+cart.setDiscountedTotal(totalCartAmount - discount
+
+Product-wise :
+                        
+discount = productPrice * productDiscountPercentage / 100;
+        setDiscountedPrice(productPrice - discount);
+
+
+BxGy Coupon:
+            buyProducts
+            getProducts
+                        
+      case 1 :buyCount = 0
+              getCount = 0
+               Not enough buy products in the cart
+                buyCount will be increased based on the items added in the cart.
+                getcount will be  increased
+
+      Apply discount to the "get" items:
+
+                        if number of products are eligible and discount with add discount.
+Exception Handling
+we are throwing a runtime exception base on :
+(totalCartAmount < discountThreshold)->Cart total is less than the required threshold for this coupon."
+
+product-wise :
+if Product is not in the cart: "Product not found in cart for this coupon."
+Product is in the cart but quantity is insufficient:"Insufficient quantity for applying the coupon."
+
+BXGY coupons
+
+if (buyCount < 2) then   "Not enough buy items for this BxGy coupon." for example, we need to buy at least 2 items for BxGy to apply
+        if (buyCount / 2 > repetitionLimit)"Coupon repetition limit exceeded." for Multiple repetitions of the coupon
+          if (getCount == 0) for No get items in the cart("No eligible free products available in the cart.
+
+
+  At different end points for Coupon
+● POST /coupons: Create a new coupon.
+● GET /coupons: Retrieve all coupons.
+● GET /coupons/{id}: Retrieve a specific coupon by its ID.
+● PUT /coupons/{id}: Update a specific coupon by its ID.
+● DELETE /coupons/{id}: Delete a specific coupon by its ID.
+● POST /applicable-coupons: 
+● POST /apply-coupon/{id}: 
+● POST/apply-coupon/cart-wise:
+●POST/apply-coupon/product-wise
+●POST/apply-coupon/bxgy
+
+spring.application.name=Coupons
+server.port=8090
+spring.datasource.url=jdbc:mysql://localhost:3306/coupons
+spring.datasource.username=couponManager
+spring.datasource.password=root@123456
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+
+
+
+                        
+
+
+
+
+
+End points
+
+
+Exception Handling while applying coupons
+
